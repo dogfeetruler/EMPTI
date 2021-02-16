@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.2.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="buyorderdetails" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ceb836c1-4a26-4eac-a653-2a7e93730792">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="hein"/>
+	<queryString language="SQL">
+		<![CDATA[select * from buyorderdetails]]>
+	</queryString>
+	<field name="ORDERDETAIL_NO" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="ORDERDETAIL_NO"/>
+	</field>
+	<field name="ITEM_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_NO"/>
+	</field>
+	<field name="ORDER_NO" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="ORDER_NO"/>
+	</field>
+	<field name="ORDER_QTY" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="ORDER_QTY"/>
+	</field>
+	<group name="ORDERDETAIL_NO">
+		<groupExpression><![CDATA[$F{ORDERDETAIL_NO}]]></groupExpression>
+	</group>
+	<group name="ITEM_NO">
+		<groupExpression><![CDATA[$F{ITEM_NO}]]></groupExpression>
+	</group>
+	<group name="ORDER_NO">
+		<groupExpression><![CDATA[$F{ORDER_NO}]]></groupExpression>
+	</group>
+	<group name="ORDER_QTY">
+		<groupExpression><![CDATA[$F{ORDER_QTY}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

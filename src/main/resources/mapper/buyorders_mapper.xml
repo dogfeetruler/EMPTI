@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper	namespace="com.hein.empti.buyorders.mapper.BuyordersMapper">
+	<!-- 구매주문 전체조회 -->
+	<select id="getBuyordersListMap" resultType="map">
+    SELECT      TO_CHAR(b.border_date, 'yyyy-MM-dd hh24:mi') 	"border_date",
+                b.buy_sum 										"buy_sum",
+                e.name											"name", 	
+                p.company_name									"company_name",
+                b.border_no										"border_no",
+                b.return_no										"return_no",
+                b.status										"status"
+    FROM        buyorders b ,
+                companies p ,
+                employees e 
+    WHERE       b.company_no = p.company_no AND
+                b.emp_id     = e.emp_id     AND
+                <![CDATA[ buy_sum > 0 ]]>
+	</select>
+	
+	<select id="getBuyordersBalMap" resultType="map">
+    SELECT      TO_CHAR(b.border_date, 'yyyy-MM-dd hh24:mi') 	"border_date",
+                b.buy_sum 										"buy_sum",
+                e.name											"name", 	
+                p.company_name									"company_name",
+                b.border_no										"border_no",
+                b.return_no										"return_no",
+                b.status										"status",
+                (b.buy_sum - nvl(s.sum,0) ) 					"balance"
+    FROM        buyorders b ,
+                companies p ,
+                employees e ,
+                (select border_no, sum(total_amount) sum from ledger group by border_no) s
+    WHERE       b.company_no = p.company_no AND
+                b.emp_id     = e.emp_id     AND
+                b.border_no  = s.border_no(+)  AND
+                (b.buy_sum - nvl(s.sum,0) )>0  
+    ORDER BY	b.border_no DESC
+	</select>
+	
+	
+	
+	<!-- 구매주문 단건조회 -->
+	<select id="getBuyorders" resultType="BuyordersVO">
+		SELECT *
+		FROM BUYORDERS
+		WHERE border_no = #{border_no}
+	</select>
+	
+	<!-- 구매주문 시퀀스조회 -->
+	<select id="getBuySeq" resultType="String">
+		SELECT Buymaster_seq.NEXTVAL "seqval"
+		FROM dual
+	</select>
+	
+	<!-- 구매주문 count -->
+	<select id="getBuyCount" resultType="BuyordersVO" parameterType="int">
+		SELECT count(*) "cnt"
+		FROM buyorders
+		WHERE BORDER_NO = #{border_no}
+	</select>
+	
+	<!-- 구매주문 등록 -->
+	<insert id="setInsertBuyorders" parameterType="BuyordersVO">
+		INSERT INTO	BUYORDERS
+		(border_no,
+		border_date,
+		buy_sum,
+		status,
+		company_no,
+		emp_id
+		)
+		VALUES (
+		#{border_no},
+		To_date(#{border_date}, 'yyyy-MM-dd hh24:mi'),
+		#{buy_sum},
+		'수령중',
+		#{company_no},
+		#{emp_id}
+		)
+	</insert>
+
+	<!-- 판매주문 배송상태 수정 -->
+	<update id="setUpdateBuyDel" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+			UPDATE buyorders
+			SET status =
+			#{item.status}
+			WHERE border_no = #{item.border_no}
+		</foreach>
+	</update>
+
+	<!-- 반품 조회 -->
+	<select id="getReturnBuyordersList" parameterType="BuyordersVO" resultType="BuyordersVO">
+		SELECT b.border_date "border_date", b.return_date "return_date", b.buy_sum "buy_sum", 
+				e.name "name", c.company_name "company_name", b.return_no "return_no"
+		FROM buyorders b JOIN employees e 	ON (b.emp_id = e.emp_id)
+		JOIN companies c 					ON (b.company_no = c.company_no)
+		<![CDATA[where buy_sum < 0 ]]>
+		ORDER by b.border_no
+	</select>
+	
+	<!-- 구매주문수정 -->
+	<update id="setUpdateBuyorders" parameterType="BuyordersVO">
+		UPDATE BUYORDERS
+		<set>
+			<if test="border_date != null">border_date = To_date(#{border_date},'yyyy-MM-dd hh24:mi:ss'),
+			</if>
+			<if test="buy_sum != null">buy_sum = #{buy_sum},</if>
+			<if test="company_no != null">company_no = #{company_no},</if>
+			<if test="emp_id != null">emp_id = #{emp_id},</if>
+			<if test="status != null">status = #{status}</if>
+		</set>
+		WHERE border_no = #{border_no}
+	</update>
+	
+	<!-- 반품 입력 -->
+	<insert id="setInsertBuyordersRetrun" statementType="CALLABLE">
+		{call return_buyorder(
+		#{border_no, mode=OUT, jdbcType=VARCHAR},
+		#{border_date, mode=OUT, jdbcType=VARCHAR},
+		#{buy_sum, mode=OUT, jdbcType=VARCHAR},
+		#{emp_id, mode=OUT, jdbcType=VARCHAR},
+		#{company_no, mode=OUT, jdbcType=VARCHAR},
+		#{return_no}
+		) }
+	</insert>
+	
+	<!-- buyorder 전체조회 Map(Excel) -->
+	<select id="getBuyordersexcelMap" resultType="map" parameterType="DeptVO">
+		select*from buyordersexcel_view order by 구매일자 desc
+	</select>
+	
+	<delete id="setDeleteBuyorders" parameterType="BuyordersVO">
+		DELETE FROM	BUYORDERS
+		WHERE border_no = #{border_no}
+	</delete>
+	
+	<!-- '수령중'인 주문 건수 -->
+	<select id="getReadyBuyorders" resultType="string" parameterType="BuyordersVO">
+		SELECT COUNT(*) "count" 
+		FROM buyorders
+		WHERE status = '수령중'
+	</select>
+</mapper>

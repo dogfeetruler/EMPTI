@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.items.mapper.ItemsMapper">
+
+	<!-- 품목 전체조회 -->
+	<select id="getItemsList" resultType="ItemsVO">
+		SELECT *
+		FROM items
+		ORDER BY
+		item_no
+	</select>
+
+	<!-- item_view 전체조회 Map(Excel) -->
+	<select id="getItemsMap" resultType="map" parameterType="ItemsVO">
+		SELECT*FROM itemexcel_view
+	</select>
+
+	<!-- 품목 등록 -->
+	<insert id="setInsertItems" parameterType="ItemsVO">
+		INSERT INTO ITEMS (
+		item_no,
+		item_name,
+		category,
+		unit,
+		exp_date,
+		item_price
+
+		)
+		VALUES(
+		#{item_no},
+		#{item_name},
+		#{category},
+		#{unit},
+		#{exp_date},
+		#{item_price}
+		)
+	</insert>
+
+	<!-- 품목 수정 -->
+	<update id="setUpdateItems" >
+		<!-- null체크 후 변경 . 동적 쿼리 -->
+
+		UPDATE ITEMS
+		<set>
+			<if test="item_name != null">item_name=#{item_name},</if>
+			<if test="category != null">category=#{category},</if>
+			<if test="unit != null">unit=#{unit},</if>
+			<if test="exp_date != null">exp_date=#{exp_date},</if>
+			<if test="item_price != null">item_price=#{item_price},</if>
+		</set>
+		WHERE item_no=#{item_no}
+	</update>
+
+	<!-- 품목 단건조회 -->
+	<select id="getItems" resultType="ItemsVO"
+		parameterType="ItemsVO">
+		SELECT * FROM ITEMS WHERE item_no = #{item_no}
+	</select>
+
+	<!-- 품목 삭제 -->
+	<delete id="setDeleteItems" parameterType="ItemsVO">
+		DELETE FROM items 
+		WHERE item_no = #{item_no}	
+	</delete>
+
+	<!-- 폐기/불량에서 품목찾기 -->
+	<select id="getDisposalCount" parameterType="ItemsVO" resultType="int">
+		select count(*) "cnt"
+		from   disposal
+		where  item_no = #{item_no}
+	</select>
+	
+	<!-- 상세구매주문 에서 품목찾기-->
+		<select id="getBuyDetailCount" parameterType="ItemsVO" resultType="int">
+		SELECT count(*) "cnt"
+		FROM   buyorderdetails
+		WHERE  item_no = #{item_no}
+	</select>
+	
+	<!-- 상세구매주문 에서 품목찾기-->
+		<select id="getSaleDetailCount" parameterType="ItemsVO" resultType="int">
+		SELECT count(*) "cnt"
+		FROM   saleorderdetails
+		WHERE  item_no = #{item_no}
+	</select>
+</mapper>

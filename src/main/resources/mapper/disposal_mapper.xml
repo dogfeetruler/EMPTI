@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- empti_mapper.xml -->
+<mapper namespace="com.hein.empti.disposal.mapper.DisposalMapper">
+
+	<!-- 폐기불량 전체조회 -->
+	<select id="getDisposalList" resultType="map" parameterType="DisposalVO">
+		SELECT d.disposal_no "disposal_no", d.disposal_qty "disposal_qty", d.price "price", d.category "category", d.strg_no "strg_no", d.item_no "item_no",
+				s.strg_category "strg_category", i.item_name "item_name",
+				TO_CHAR(d.disposal_date, 'yyyy-MM-dd hh24:mm') "disposal_date"
+		FROM disposal d JOIN storages s ON (d.strg_no = s.strg_no)
+						JOIN items i ON (d.item_no = i.item_no)
+		<where>
+			<if test="radioCategory !=null and radioCategory !='' ">	
+			 	d.category = #{radioCategory}
+			</if>
+			<if test="startDate !=null and startDate != '' ">	
+				<![CDATA[
+				AND   trunc(d.disposal_date) >= to_date(#{startDate}, 'YYYY-MM-DD' )
+					]]>
+			</if>
+			<if test="endDate !=null and endDate != '' ">	
+				<![CDATA[
+				AND	trunc(d.disposal_date) <= to_date(#{endDate}, 'YYYY-MM-DD')
+					]]>
+			</if>
+		</where>
+		ORDER BY disposal_no 
+	</select>
+
+	<!-- 폐기불량 전체조회 Map(Excel) -->
+	<select id="getDisposalMap" resultType="map" parameterType="DisposalVO">
+		SELECT *
+		FROM disposallist_view
+	</select>
+
+	<!-- 폐기불량 등록 -->
+	<insert id="setInsertDisposal" parameterType="DisposalVO">
+		INSERT INTO Disposal ( disposal_no,
+		disposal_qty,
+		price,
+		disposal_date,
+		category,
+		strg_no,
+		item_no
+		)
+		VALUES(
+		( SELECT NVL(MAX(disposal_no),0)+1 FROM disposal ),
+		#{disposal_qty},
+		#{price},
+		To_date(#{disposal_date},'yyyy-MM-dd hh24:mi:ss'),
+		#{category},
+		#{strg_no},
+		#{item_no}
+		)
+	</insert>
+
+	<!--폐기불량 수정 -->
+	<update id="setUpdateDisposal" parameterType="DisposalVO">
+		<!-- null체크 후 변경 . 동적 쿼리 -->
+		UPDATE Disposal
+		<set>
+			<if test="disposal_qty != null">disposal_qty=#{disposal_qty},</if>
+			<if test="price != null">price=#{price},</if>
+			<if test="disposal_date != null">disposal_date=To_date(#{disposal_date},'yyyy-MM-dd hh24:mi:ss'),</if>
+			<if test="category != null">category=#{category},</if>
+			<if test="strg_no != null">strg_no=#{strg_no},</if>
+			<if test="item_no != null">item_no=#{item_no}</if>
+		</set>
+		WHERE disposal_no=#{disposal_no}
+	</update>
+
+	<!-- 폐기불량 단건조회 -->
+	<select id="getDisposal" resultType="DisposalVO" parameterType="DisposalVO">
+		SELECT d.*, i.*
+		FROM   disposal d, items i	 
+		WHERE  d.item_no = i.item_no AND	
+				disposal_no = #{disposal_no}
+	</select>
+	
+	<!-- 폐기/불량 삭제 -->
+	<delete id="setDeleteDisposal" parameterType="DisposalVO">
+		DELETE FROM disposal 
+		WHERE     	disposal_no = #{disposal_no}
+	</delete>
+	
+	
+	<!-- 입/출고 기준 폐기/불량률 -->
+	<select id="getAvgDisposal" resultType="map">
+		SELECT i.item_name "item_name", sum(stock_qty) "stock_qty", sum(disposal_qty) "disposal_qty"
+		FROM disposal d JOIN stocks s ON (s.item_no = d.item_no)
+						JOIN items i ON (d.item_no = i.item_no)
+		GROUP BY i.item_name
+		ORDER BY 1
+	</select>
+</mapper>

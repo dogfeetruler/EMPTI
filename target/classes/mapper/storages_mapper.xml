@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- empti_mapper.xml -->
+<mapper namespace="com.hein.empti.storages.mapper.StoragesMapper">
+
+	<!-- 창고 전체조회 -->
+	<select id="getStoragesList" resultType="StoragesVO"
+		parameterType="StoragesVO">
+		SELECT *
+		FROM storages
+		ORDER BY strg_no
+	</select>
+
+	<!-- 창고_view 전체조회 Map(Excel) -->
+	<select id="getStoragesExcelMap" resultType="map"
+		parameterType="StoragesVO">
+		select*from storagesexcel_view order by 창고번호
+	</select>
+
+	<!-- 창고 전체조회 map --> <!-- 별칭을 주지 않으면 map에 key가 대문자로 들어가기때문.//별칭을 주지 않을거면 el태그안에 대문자로 쓰면됨. -->
+	<select id="getStoragesListMap" resultType="map"
+		parameterType="StoragesVO">
+		SELECT 		s.strg_no 			"strg_no",
+					s.strg_category 	"strg_category",
+					e.name 				"name"
+		FROM 		storages s, employees e
+		WHERE		s.emp_id = e.emp_id
+		ORDER BY 	s.strg_no
+	</select>
+	
+	<!-- 폐기불량에서 창고 찾기 -->
+	<select id="getDisposalCount" parameterType="StoragesVO" resultType="int">
+		SELECT   count(*) "cnt"
+		FROM     disposal
+		WHERE    strg_no = #{strg_no}
+	</select>
+	
+	<!-- 입출고에서 창고 찾기 -->
+	<select id="getStocksCount" parameterType="StoragesVO" resultType="int">
+		SELECT   count(*) "cnt"
+		FROM     stocks
+		WHERE    strg_no = #{strg_no}
+	</select>
+
+
+	<!-- 창고 등록 -->
+	<insert id="setInsertStorages" parameterType="StoragesVO">
+		INSERT INTO
+		Storages ( 
+		strg_no,
+		strg_category,
+		emp_id
+		)
+		VALUES(
+		#{strg_no},
+		#{strg_category},
+		#{emp_id}
+		)
+	</insert>
+
+	<!-- 창고 수정 -->
+	<update id="setUpdateStorages" parameterType="StoragesVO">
+		<!-- null체크 후 변경 . 동적 쿼리 -->
+
+		UPDATE Storages
+		<set>
+			<if test="strg_category != null">strg_category=#{strg_category},</if>
+			<if test="emp_id != null">emp_id=#{emp_id}</if>
+		</set>
+		WHERE strg_no=#{strg_no}
+	</update>
+	
+	<delete id="setDeleteStorages" parameterType="StoragesVO">
+		DELETE FROM storages
+		WHERE  strg_no=#{strg_no}
+	</delete>
+
+
+	<!-- 창고 단건조회 -->
+	<select id="getStorages" resultType="StoragesVO" parameterType="StoragesVO">
+		SELECT 	s.strg_no			,
+				s.strg_category		,
+				e.name			,
+				e.emp_id			   
+		FROM 	STORAGES s, EMPLOYEES e
+		WHERE 	s.emp_id= e.emp_id  
+		AND	  	s.strg_no = #{strg_no}
+	</select>
+
+	<!-- 창고번호 MAX -->
+	<select id="strgNoMax" resultType="StoragesVO">
+		SELECT nvl(max(strg_no)+1, 0) "strg_no"
+		FROM   STORAGES
+	</select>
+</mapper>

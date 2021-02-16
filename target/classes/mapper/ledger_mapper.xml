@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.ledger.mapper.LedgerMapper">
+	<!-- 장부번호로 단건조회 -->
+	<select id="getLedgerNo" parameterType="LedgerVO" resultType="LedgerVO">
+		SELECT *
+		FROM ledger
+		WHERE ldgr_no = #{ldgr_no}
+	</select>
+
+	<!-- 장부상태로 (전체 및 조건) 조회 -->
+	<select id="getLedgerList" parameterType="LedgerVO" resultType="LedgerVO">
+		SELECT *
+		FROM ledger
+	<where>
+	<if test="radioStatus !=null and radioStatus !='' ">	
+		status = #{radioStatus}
+	</if>
+	<if test="startDate !=null and startDate != '' ">	
+		<![CDATA[
+		  AND   trunc(ldgr_date) >= to_date(#{startDate}, 'YYYY-MM-DD' )
+			]]>
+	</if>
+		<if test="endDate !=null and endDate != '' ">	
+		<![CDATA[
+		  AND	trunc(ldgr_date) <= to_date(#{endDate}, 'YYYY-MM-DD')
+			]]>
+	</if>
+	</where>
+		ORDER BY ldgr_no desc
+	</select>
+	
+	
+		<!-- pdf -->    
+	<select id="getLedgerPdfList" parameterType="LedgerVO" resultType="LedgerVO">
+	SELECT 	   ldgr_no 										"LDGR_NO",
+			   ldgr_date 									"LDGR_DATE",
+			   status										"STATUS",
+			   border_no									"BORDER_NO",
+			   sorder_no									"SORDER_NO",
+			   to_char(total_amount, '999,999,999,999')  	"TOTAL_AMOUNT",
+			   condition									"CONDITION",
+			   note											"NOTE"
+		FROM ledger
+	<where>
+	<if test="radioStatus !=null and radioStatus !='' ">	
+		STATUS = #{radioStatus}
+	</if>
+	<if test="startDate !=null and startDate != '' ">	
+		<![CDATA[
+		  AND   trunc(LDGR_DATE) >= to_date(#{startDate}, 'YYYY-MM-DD' )
+			]]>
+	</if>
+		<if test="endDate !=null and endDate != '' ">	
+		<![CDATA[
+		  AND	trunc(LDGR_DATE) <= to_date(#{endDate}, 'YYYY-MM-DD')
+			]]>
+	</if>
+	</where>
+		ORDER BY ldgr_no desc
+	</select>
+	
+	<!-- 장부 전체조회 Map(Excel) -->
+	<select id="getLdgrExcelMap" resultType="map" parameterType="LedgerVO">
+		select*from ldgr_view
+	</select>
+
+	<!-- 장부등록 -->
+	<insert id="setInsertLedger" parameterType="LedgerVO">
+		INSERT INTO Ledger (
+		ldgr_no,
+		ldgr_date,
+		total_amount,
+		status,
+		border_no,
+		sorder_no,
+		condition,
+		note
+		)
+		VALUES (
+		( SELECT NVL(MAX(ldgr_no),0)+1 FROM Ledger ),
+		To_date(#{ldgr_date},'yyyy-MM-dd hh24:mi:ss'),
+		#{total_amount},
+		#{status},
+		#{border_no},
+		#{sorder_no},
+		#{condition},
+		#{note}
+		)
+	</insert>
+
+	<!-- 장부수정 -->
+	<update id="setUpdateLedger" parameterType="LedgerVO">
+		UPDATE Ledger
+		<set>
+			<if test="ldgr_date != null">ldgr_date = To_date(#{ldgr_date},'yyyy-MM-dd
+				hh24:mi:ss'),
+			</if>
+			<if test="total_amount != null">total_amount = #{total_amount},</if>
+			<if test="condition != null">condition = #{condition},</if>
+			<if test="border_no != null">border_no = #{border_no},</if>
+			<if test="sorder_no != null">sorder_no = #{sorder_no},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="note != null">note = #{note}</if>
+		</set>
+		WHERE
+		ldgr_no = #{ldgr_no}
+	</update>
+	
+	<!-- 장부삭제 -->
+	<delete id="setDeleteLedger" parameterType="LedgerVO">
+		DELETE FROM Ledger
+		WHERE ldgr_no = #{ldgr_no}
+	</delete>
+	
+	<!-- 월별통계 (2020-01 ~ 2021-01) -->
+	<select id="getMonthlySaleAmount" resultType="map">
+		SELECT TO_CHAR(ldgr_date, 'YYYY-MM') "ldgr_date",
+            	SUM(total_amount) "total_amount",
+            	COUNT(*) "count"
+        FROM ledger
+		WHERE ldgr_date >= '2020-01-01' AND 
+	<![CDATA[ldgr_date < '2021-01-01' ]]> AND 
+            	status = '매출'
+		GROUP BY TO_CHAR(ldgr_date, 'YYYY-MM')
+	</select>
+	
+	<!-- 영업이익 -->
+	<select id="getProfits" resultType="string" parameterType="LedgerVO">
+		SELECT SUM(total_amount) "profits"
+		FROM ledger
+		WHERE TO_CHAR(ldgr_date, 'yyyy-MM') = '2020-08'
+	</select>
+</mapper>

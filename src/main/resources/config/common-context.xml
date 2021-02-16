@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task" xmlns:security="http://www.springframework.org/schema/security" xsi:schemaLocation="http://www.springframework.org/schema/security	http://www.springframework.org/schema/security/spring-security-5.2.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">	
+	
+	<security:http pattern="/*.do" security="none"/>
+	<security:http pattern="/resources/**" security="none"/>
+	<security:http>
+
+		<!-- 아무나 허용 가능한 URL -->
+		<security:intercept-url	pattern="/loginForm" access="permitAll()" />
+		
+		<!-- 로그인 참일 경우, 이동할 URL -->
+		<security:intercept-url pattern="/**" access="isAuthenticated()" />
+		
+		
+		<security:form-login login-page="/loginForm" 
+							 login-processing-url="/login"
+							 username-parameter="emp_id" 
+							 password-parameter="pwd"
+							 authentication-failure-url="/loginForm" 
+							 authentication-success-handler-ref="loginSuccessHandler" />
+		<security:logout logout-url="/logout" logout-success-url="/loginForm" />
+		<security:csrf disabled="true" />
+		<security:access-denied-handler error-page="/404error" />
+	</security:http>
+	<security:authentication-manager>
+		<security:authentication-provider>
+			 <security:jdbc-user-service data-source-ref="dataSourceSpied"
+				users-by-username-query="SELECT emp_id, '{noop}'||pwd, 1
+										 FROM employees
+										WHERE emp_id = ?"
+				authorities-by-username-query="SELECT e.emp_id, r.role_name
+												 FROM role r
+												 INNER join emp_role er  on r.id = er.role_id
+												 INNER join employees e on er.emp_id = e.emp_id
+												 WHERE e.emp_id = ?" />
+												 
+			</security:authentication-provider>
+	</security:authentication-manager>
+
+	<context:component-scan base-package="com.hein.empti" />
+	<!--<task:scheduler id="jobScheduler" pool-size="10" /> <task:annotation-driven 
+		scheduler="jobScheduler" /> -->
+	
+	<!-- Interceptors -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" /> 
+            <bean class="com.hein.empti.common.RoleInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

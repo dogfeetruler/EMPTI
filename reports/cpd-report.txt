@@ -1,0 +1,315 @@
+Found a 19 line (92 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\company\mapper\CompanyMapper.java
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\company\service\CompanyService.java
+
+public interface CompanyMapper {
+	public List<CompanyVO> getCompanyList(CompanyVO companyVO);
+	public CompanyVO getCompany(CompanyVO companyVO);
+	public void setInsertCompany(CompanyVO companyVO);
+	public void setUpdateCompany(CompanyVO companyVO);
+	public void setDeleteCompany(CompanyVO companyVO);
+	
+	//?Ç≠?†ú count
+	public int getBuyCount(CompanyVO companyVO);
+	public int getSaleCount(CompanyVO companyVO);
+	//Í±∞ÎûòÏ≤? Í≤??Éâ
+	public List<CompanyVO> findCompany(CompanyVO companyVO);
+	
+	//Í±∞ÎûòÏ≤? Î¶¨Ïä§?ä∏ (Map) ?óë??
+	public List<Map<String, Object>> getCompanyMap(CompanyVO vo);
+ 
+	// data chart
+	public List<Map<String,Object>> getVipCompany();
+}
+=====================================================================
+Found a 18 line (84 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\storages\mapper\StoragesMapper.java
+Starting at line 9 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\storages\service\StoragesService.java
+
+public interface StoragesMapper {
+	
+	public StoragesVO getStorages(StoragesVO storagesVO);
+	public List<StoragesVO> getStoragesList(StoragesVO storagesVO);
+	public void setInsertStorages(StoragesVO storagesVO);
+	public void setUpdateStorages(StoragesVO storagesVO);
+	public void setDeleteStorages(StoragesVO storagesVO);
+	
+	//?Ç≠?†úÏ≤òÎ¶¨ Ï°∞Í±¥
+	public int getDisposalCount(StoragesVO storagesVO);
+	public int getStocksCount(StoragesVO storagesVO);
+	
+	
+	public List<Map<String, Object>> getStoragesListMap(StoragesVO storagesVO);
+	
+	//Ï∞ΩÍ≥† (map)?óë??
+	public List<Map<String,Object>> getStoragesExcelMap(StoragesVO vo);
+}
+=====================================================================
+Found a 26 line (78 tokens) duplication in the following files: 
+Starting at line 11 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\buyorders\mapper\BuyordersMapper.java
+Starting at line 12 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\buyorders\service\BuyordersService.java
+
+	public void setInsertBuyorders(BuyordersVO buyordersVO);
+	public void setUpdateBuyorders(BuyordersVO buyordersVO);
+	public void setDeleteBuyorders(BuyordersVO buyordersVO);
+	
+	//?ãú???ä§ Ï°∞Ìöå
+	public String getBuySeq();
+	
+	//?óë??
+	public List<Map<String, Object>> getBuyordersexcelMap(BuyordersVO vo);
+	
+	//pdf
+	//public List<>
+	
+	//Íµ¨Îß§Ï£ºÎ¨∏ map?ã¥Í∏?
+	public List<Map<String, Object>> getBuyordersListMap(BuyordersVO buyordersVO);
+
+	//Î∞òÌíà Ï°∞Ìöå
+	public List<BuyordersVO> getReturnBuyordersList(BuyordersVO buyordersVO);
+	
+	//Î∞òÌíà Ï≤òÎ¶¨(insert)
+	public void setInsertBuyordersRetrun(BuyordersVO buyordersVO);
+
+	//?àò?†ïÏ≤òÎ¶¨(Î∞∞ÏÜ°?ÉÅ?ÉúÎß?)
+	public void setUpdateBuyDel(List<BuyordersVO> bList);
+	
+}
+=====================================================================
+Found a 10 line (78 tokens) duplication in the following files: 
+Starting at line 71 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\web\EmpController.java
+Starting at line 117 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\web\EmpController.java
+
+	public String setInsertEmp(EmpVO empVO,Model model) throws IOException {
+		MultipartFile file = empVO.getUploadFile();
+		String filename = file.getOriginalFilename();
+		if (file != null && file.getSize() > 0) {
+			File upFile = FileRenamePolicy.rename(new File("D:/upload",filename));
+			filename = upFile.getName();
+			file.transferTo(upFile);
+			}
+		empVO.setProfile(filename);
+		empService.setInsertEmp(empVO);
+=====================================================================
+Found a 14 line (75 tokens) duplication in the following files: 
+Starting at line 9 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\mapper\EmpMapper.java
+Starting at line 9 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\service\EmpService.java
+
+public interface EmpMapper {
+	
+	public EmpVO getEmp(EmpVO empVO);
+	public List<EmpVO> getEmpList(EmpVO empVO);
+	public void setInsertEmp(EmpVO empVO);
+	public void setUpdateEmp(EmpVO empVO);
+	public void setDeleteEmp(EmpVO empVO);
+	public List<Map<String,Object>> getDeptEmpCnt();
+	public int getDeptCount(DeptVO deptVO);
+	
+	//emp (Map)?óë??
+	public List<Map<String, Object>> getEmpMap(EmpVO vo);
+
+}
+=====================================================================
+Found a 21 line (71 tokens) duplication in the following files: 
+Starting at line 11 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorders\mapper\SaleordersMapper.java
+Starting at line 12 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorders\service\SaleordersService.java
+
+	public void setInsertSaleorders(SaleordersVO saleordersVO);
+	public void setDeleteSaleorders(SaleordersVO saleordersVO);
+	
+	//?ãú???ä§ Ï°∞Ìöå
+	public String getSaleSeq();
+	
+	//?åêÎß§Ï£ºÎ¨?(JOIN name, company_name) Map Í∞ùÏ≤¥?óê ?ã¥?ïÑ?Ñú Ï°∞Ìöå
+	public List<Map<String, Object>> getSaleordersListMap(SaleordersVO saleordersVO);
+	
+	//?óë??
+	public List<Map<String, Object>> getSaleOrdersExcelMap(SaleordersVO vo);
+	
+	//Î∞òÌíà Ï°∞Ìöå
+	public List<SaleordersVO> getReturnSaleordersList(SaleordersVO saleordersVO);
+
+	//Î∞òÌíà Ï≤òÎ¶¨(Insert)
+	public void setInsertSaleordersRetrun(SaleordersVO vo);
+	
+	//?àò?†ïÏ≤òÎ¶¨(Î∞∞ÏÜ°?ÉÅ?ÉúÎß?)
+	public void setUpdateSaleDel(List<SaleordersVO> sList);
+}
+=====================================================================
+Found a 13 line (62 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\dept\mapper\DeptMapper.java
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\dept\service\DeptService.java
+
+public interface DeptMapper {
+
+	public DeptVO getDept(DeptVO deptVO);
+	public List<DeptVO> getDeptList(DeptVO deptVO);
+	public void setInsertDept(DeptVO deptVO);
+	public void setUpdateDept(DeptVO deptVO);
+	public void setDeleteDept(DeptVO deptVO);
+	public int getDeptCount(DeptVO deptVO);
+	
+	//?èêÍ∏? Î∂àÎüâ Î¶¨Ïä§?ä∏(Map) ?óë??
+	public List<Map<String, Object>> getDeptMap(DeptVO vo);
+	
+}
+=====================================================================
+Found a 10 line (53 tokens) duplication in the following files: 
+Starting at line 9 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\mapper\DisposalMapper.java
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\service\DisposalService.java
+
+public interface DisposalMapper {
+
+	public DisposalVO getDisposal(DisposalVO disposalVO);
+	public List<Map<String, Object>> getDisposalList(DisposalVO disposalVO);
+	public void setInsertDisposal(DisposalVO disposalVO);
+	public void setUpdateDisposal(DisposalVO disposalVO);
+	
+	//?èêÍ∏? Î∂àÎüâ Î¶¨Ïä§?ä∏(Map) ?óë??
+	public List<Map<String, Object>> getDisposalMap(DisposalVO vo);
+}
+=====================================================================
+Found a 10 line (48 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\items\mapper\ItemsMapper.java
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\items\service\ItemsService.java
+
+public interface ItemsMapper {
+
+	public ItemsVO getItems(ItemsVO itemsVO);
+	public List<ItemsVO> getItemsList(ItemsVO itemsVO);
+	public void setInsertItems(ItemsVO itemsVO);
+	public void setUpdateItems(ItemsVO itemsVO);
+	
+	//?íàÎ™? Î¶¨Ïä§?ä∏(Map) ?óë??
+	public List<Map<String, Object>> getItemsMap(ItemsVO vo);
+}
+=====================================================================
+Found a 9 line (48 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\stocks\mapper\StocksMapper.java
+Starting at line 9 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\stocks\service\StocksService.java
+
+public interface StocksMapper {
+	
+	public StocksVO getStocks(StocksVO stocksVO);
+	public List<StocksVO> getStocksList(StocksVO stocksVO);
+	public void setInsertStocks(StocksVO stocksVO);
+	public void setUpdateStocks(StocksVO stocksVO);
+	//stock_view (Map)?óë??
+	public List<Map<String, Object>> getStocksMap(StocksVO vo);
+}
+=====================================================================
+Found a 10 line (47 tokens) duplication in the following files: 
+Starting at line 10 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\ledger\mapper\LedgerMapper.java
+Starting at line 11 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\ledger\service\LedgerService.java
+
+	public LedgerVO getLedgerNo(LedgerVO ledgerVO);
+	public void setInsertLedger(LedgerVO ledgerVO);
+	public void setUpdateLedger(LedgerVO ledgerVO);
+	
+	//?óë??
+	public List<Map<String, Object>> getLdgrExcelMap(LedgerVO vo);
+	
+	//?õîÎ≥? Îß§Ï∂ú ?ÜµÍ≥? Ï∞®Ìä∏
+	public List<Map<String,Object>> getMonthlySaleAmount();
+}
+=====================================================================
+Found a 9 line (42 tokens) duplication in the following files: 
+Starting at line 46 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\web\DisposalControllerAjax.java
+Starting at line 46 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\ledger\web\LedgerController.java
+
+		disposalService.setInsertDisposal(disposalVO);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("result", true);
+		map.put("kkk", "ok");
+		return map;
+	}
+
+	// ?àò?†ï
+	@RequestMapping(value = "/disposals", method = RequestMethod.PUT, consumes = "application/json")
+=====================================================================
+Found a 4 line (38 tokens) duplication in the following files: 
+Starting at line 36 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\web\DisposalControllerAjax.java
+Starting at line 36 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\stocks\web\StocksControllerAjax.java
+
+	public String setInsertFormDisposal(Model model, ItemsVO itemsVO, StoragesVO storagesVO) {
+		model.addAttribute("storages", storagesService.getStoragesList(storagesVO));
+		model.addAttribute("items", itemsService.getItemsList(itemsVO));
+		return "admin/disposal/disposalAjax";
+=====================================================================
+Found a 10 line (34 tokens) duplication in the following files: 
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorderdetails\mapper\SaleorderdetailsMapper.java
+Starting at line 8 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorderdetails\service\SaleorderdetailsService.java
+
+public interface SaleorderdetailsMapper {
+	//?†ÑÏ≤¥Ï°∞?öå Where:Ï£ºÎ¨∏Î≤àÌò∏
+	public List<Map<String, Object>> getSaleorderdetailList(SaleorderdetailsVO vo);
+	
+	//?ã§Ï§? Insert
+	public void setSaleorderdetailInsert(List<SaleorderdetailsVO> list);
+	
+	//?Ç≠?†ú
+	public void setSaleorderdetailDelete(SaleorderdetailsVO vo);
+}
+=====================================================================
+Found a 6 line (33 tokens) duplication in the following files: 
+Starting at line 117 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\company\web\CompanyController.java
+Starting at line 90 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\dept\web\DeptController.java
+Starting at line 147 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\web\EmpController.java
+Starting at line 74 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\items\web\ItemsController.java
+Starting at line 131 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorders\web\SaleordersController.java
+Starting at line 89 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\storages\web\StoragesController.java
+
+	@RequestMapping("companyPdf.do")
+	public ModelAndView getSaleLedgerListReport(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("pdfView");
+		mv.addObject("filename", "/reports/companyPdf.jrxml");
+=====================================================================
+Found a 4 line (31 tokens) duplication in the following files: 
+Starting at line 30 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\buyorderdetails\web\BuyorderdetailsController.java
+Starting at line 25 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorderdetails\web\SaleorderdetailsController.java
+
+	public Map setBuyorderdetailInsert(@RequestBody List<BuyorderdetailsVO> list) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("success", true);
+		service.setBuyorderdetailInsert(list);
+=====================================================================
+Found a 5 line (29 tokens) duplication in the following files: 
+Starting at line 169 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\buyorders\web\BuyordersController.java
+Starting at line 118 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\company\web\CompanyController.java
+Starting at line 91 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\dept\web\DeptController.java
+Starting at line 92 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\web\DisposalControllerAjax.java
+Starting at line 148 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\emp\web\EmpController.java
+Starting at line 75 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\items\web\ItemsController.java
+Starting at line 92 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\ledger\web\LedgerController.java
+Starting at line 132 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\saleorders\web\SaleordersController.java
+Starting at line 90 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\storages\web\StoragesController.java
+
+	public ModelAndView getBuyorderListReport(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("pdfView");
+		mv.addObject("filename", "/reports/buyorders_list_pdf.jrxml");
+=====================================================================
+Found a 3 line (25 tokens) duplication in the following files: 
+Starting at line 106 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\common\CommonExcelView.java
+Starting at line 124 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\common\CommonExcelView.java
+
+		if (headers != null) {
+			for (int i = 0; i < list.size(); i++) {
+				row = sheet.createRow(i + 1); // ?ï¥?çî Ïπ∏ÏùÑ ?úÑ?ï¥ Î∞òÎ≥µ?? 1Î∂??Ñ∞ Î∞òÎ≥µ
+=====================================================================
+Found a 8 line (25 tokens) duplication in the following files: 
+Starting at line 47 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\disposal\web\DisposalControllerAjax.java
+Starting at line 47 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\ledger\web\LedgerController.java
+Starting at line 47 of D:\Dev\git\EMPTI\yologolo\src\main\java\com\hein\empti\stocks\web\StocksControllerAjax.java
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("result", true);
+		map.put("kkk", "ok");
+		return map;
+	}
+
+	// ?àò?†ï
+	@RequestMapping(value = "/disposals", method = RequestMethod.PUT, consumes = "application/json")

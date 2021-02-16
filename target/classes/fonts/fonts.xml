@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+	<fontFamily name="맑은고딕">
+		<normal>fonts/MALGUN.TTF</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+	<fontFamily name="함초롱바탕">
+		<normal>fonts/HANBatang.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+	<fontFamily name="나눔고딕볼드">
+		<normal>fonts/NANUMGOTHICBOLD.TTF</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+	<fontFamily name="나눔고딕">
+		<normal>fonts/NANUMGOTHIC.TTF</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+	<fontFamily name="바탕">
+		<normal>fonts/HANBatangB.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+</fontFamilies>

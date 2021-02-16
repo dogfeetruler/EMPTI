@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.saleorderdetails.mapper.SaleorderdetailsMapper">
+	
+	<select id="getSaleorderdetailList" parameterType="SaleorderdetailsVO" resultType="map">
+	  SELECT i.item_name "item_name", s.sorder_qty "sorder_qty", i.item_price "item_price"
+		FROM items i JOIN saleorderdetails s
+		ON   (i.item_no = s.item_no)
+		WHERE s.sorder_no = #{sorder_no}
+	</select>
+	
+	<insert id="setSaleorderdetailInsert" parameterType="java.util.List">
+		INSERT INTO saleorderdetails (
+		sorderdetail_no,
+		item_no,
+		sorder_qty,
+		sorder_no
+		)
+		SELECT saledetail_seq.nextval, A.*
+		from (
+		<foreach collection="list" item="item" separator="UNION ALL">
+			select 
+			#{item.item_no}, #{item.sorder_qty}, #{item.sorder_no}
+			from dual
+		</foreach>
+		) "A"
+	</insert>
+	
+	<delete id="setSaleorderdetailDelete" parameterType="SaleorderdetailsVO">
+		DELETE FROM saleorderdetails 
+		WHERE sorder_no = #{sorder_no}
+	</delete>
+</mapper>

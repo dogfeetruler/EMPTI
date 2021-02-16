@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.saleorders.mapper.SaleordersMapper">
+	<!-- 판매주문단건조회 -->
+	<select id="getSaleorders" parameterType="SaleordersVO"
+		resultType="SaleordersVO">
+		SELECT *
+		FROM saleorders
+		WHERE sorder_no = #{sorder_no}
+	</select>
+
+	<!-- 판매주문전체조회 list -->
+	<select id="getSaleordersList" resultType="SaleordersVO">
+		SELECT *
+		FROM saleorders
+		ORDER BY sorder_no
+	</select>
+
+	<!-- 판매주문 전체조회 Map(Excel) -->
+	
+	<select id="getSaleOrdersExcelMap" resultType="map"	parameterType="SaleordersVO">
+		select * from saleorderlist_view
+		
+	</select>
+
+	<!-- 판매주문전체조회 Map -->
+	<select id="getSaleordersListMap" parameterType="SaleordersVO" resultType="map">
+		SELECT 	   s.sorder_no                                 			"sorder_no",
+         		   TO_CHAR(s.sorder_date, 'yyyy-MM-dd hh24:mi') 		"sorder_date",
+            	   s.sale_sum                                    		"sale_sum",
+            	   s.del_status                                  		"del_status",
+            	   e.name                                         		"name",
+            	   c.company_name                                  		"company_name",
+            	   s.return_no                                       	"return_no",
+            	   (s.sale_sum - nvl(sp.sum,0))  	                            "balance"
+		FROM       employees e  ,
+              	   saleorders s ,
+                   companies c  ,
+            	  (select sorder_no, sum(total_amount) sum from ledger group by sorder_no) sp         
+    	WHERE      e.emp_id = s.emp_id AND
+        	       s.company_no = c.company_no AND
+            	   s.sorder_no = sp.sorder_no(+)
+		ORDER BY 2 DESC
+	</select>
+
+	<!-- 판매주문 시퀀스조회 -->
+	<select id="getSaleSeq" resultType="String">
+		SELECT Salemaster_seq.NEXTVAL
+		"seqval"
+		FROM dual
+	</select>
+
+	<!-- 판매주문등록 -->
+	<insert id="setInsertSaleorders" parameterType="SaleordersVO">
+		INSERT INTO
+		saleorders (
+		sorder_no,
+		sorder_date,
+		sale_sum,
+		del_status,
+		emp_id,
+		company_no
+		)
+		VALUES (
+		#{sorder_no},
+		To_date(#{sorder_date}, 'yyyy-MM-dd
+		hh24:mi:ss'),
+		#{sale_sum},
+		'배송준비중',
+		#{emp_id},
+		#{company_no})
+	</insert>
+
+	<!-- 판매주문 배송상태 수정 -->
+	<update id="setUpdateSaleDel" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";"
+			open="DECLARE BEGIN" close="; END;">
+			UPDATE saleorders
+			SET del_status = #{item.del_status}
+			WHERE sorder_no = #{item.sorder_no}
+		</foreach>
+	</update>
+
+	<!-- 반품 조회 -->
+	<select id="getReturnSaleordersList" parameterType="SaleordersVO" resultType="SaleordersVO">
+		SELECT s.sorder_date "sorder_date", s.return_date "return_date", s.sale_sum "sale_sum", 
+				e.name "name", c.company_name "company_name", s.return_no "return_no"
+		FROM saleorders s JOIN employees e 	ON (s.emp_id = e.emp_id)
+		JOIN companies c 					ON (s.company_no = c.company_no)
+		<![CDATA[WHERE sale_sum < 0 ]]>
+		ORDER by s.sorder_no
+	</select>
+
+	<!-- 반품 입력 및 원래 주문 배송상태 수정 -->
+	<insert id="setInsertSaleordersRetrun" statementType="CALLABLE">
+		{call
+		return_saleorder(
+		#{sorder_no, mode=OUT, jdbcType=VARCHAR},
+		#{sorder_date, mode=OUT, jdbcType=VARCHAR},
+		#{sale_sum, mode=OUT,
+		jdbcType=VARCHAR},
+		#{emp_id, mode=OUT, jdbcType=VARCHAR},
+		#{company_no,
+		mode=OUT, jdbcType=VARCHAR},
+		#{return_no}
+		) }
+	</insert>
+
+	<!-- 판매주문삭제 -->
+	<delete id="setDeleteSaleorders" parameterType="SaleordersVO">
+		DELETE FROM saleorders
+		WHERE sorder_no = #{sorder_no}
+	</delete>
+	
+	<!-- '배송준비중'인 주문 건수 -->
+	<select id="getReadySaleorders" resultType="string" parameterType="SaleordersVO">
+		SELECT COUNT(*) "count" 
+		FROM saleorders
+		WHERE del_status = '배송준비중'
+	</select>
+	
+	<!-- 판매량 높은 품목 Best5 -->
+	<select id="getHigherSaleItems" resultType="map" >
+		SELECT *
+		FROM 
+			(SELECT i.item_name "item_name", count(s.sorder_no) "count"
+			FROM SALEORDERS s 				JOIN SALEORDERDETAILS sd
+			ON (s.sorder_no = sd.sorder_no) JOIN items i
+			ON (sd.item_no = i.item_no)
+			GROUP BY i.item_name)
+		<![CDATA[WHERE ROWNUM <= 5 ]]>
+		ORDER BY 2 DESC
+	</select>
+</mapper>

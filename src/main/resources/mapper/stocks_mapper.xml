@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.stocks.mapper.StocksMapper">
+	<!-- 전체조회 -->
+	<select id="getStocksList" parameterType="StocksVO" resultType="StocksVO">
+		SELECT   st.*, i.item_name, c.company_name, sg.strg_category
+		FROM     stocks st JOIN  items i ON (st.item_no = i.item_no)
+	                       JOIN storages sg ON (st.strg_no = sg.strg_no)
+	                       LEFT OUTER JOIN buyorders b ON (st.border_no = b.border_no)
+	                       LEFT OUTER JOIN companies c ON (b.company_no = c.company_no)
+		ORDER BY st.stock_no     
+	</select>
+	
+	<!-- 입고내역 조회 -->
+	<select id="getWarehousingList" parameterType="StocksVO" resultType="StocksVO" >
+		SELECT   st.*, i.item_name, c.company_name, sg.strg_category
+		FROM     stocks st JOIN  items i ON (st.item_no = i.item_no)
+		                   JOIN storages sg ON (st.strg_no = sg.strg_no)
+		                   LEFT OUTER JOIN buyorders b ON (st.border_no = b.border_no)
+		                   LEFT OUTER JOIN companies c ON (b.company_no = c.company_no)
+		WHERE    stock_category = '입고'
+		ORDER BY st.stock_no  	
+	</select >
+	
+	<!-- 출고내역 조회 -->
+	<select id="getReleaseList" parameterType="StocksVO" resultType="StocksVO">
+		SELECT   st.*, i.item_name, c.company_name, sg.strg_category
+		FROM     stocks st JOIN  items i ON (st.item_no = i.item_no)
+                      	   JOIN storages sg ON (st.strg_no = sg.strg_no)
+                       	   LEFT OUTER JOIN buyorders b ON (st.border_no = b.border_no)
+                     	   LEFT OUTER JOIN companies c ON (b.company_no = c.company_no)
+		WHERE    stock_category = '출고'
+		ORDER BY st.stock_no  	
+	</select>
+	
+	
+	<select id="findStockBorderNo" parameterType="StocksVO" resultType="StocksVO">
+		SELECT   bd.*, b.border_date, c.company_no, c.company_name, i.item_name
+		FROM     buyorders b, buyorderdetails bd, items i ,companies c
+		WHERE    b.border_no = bd.border_no
+		AND      i.item_no = bd.item_no
+		AND      b.company_no = c.company_no
+		AND      b.status != '반품'
+		AND      b.status != '수령완료'
+		ORDER BY b.border_date
+	</select>
+	
+	<!-- 판매주문 배송상태 수정 -->
+	<insert id="setInsertStockBorders" parameterType="java.util.List">
+		INSERT INTO stocks (
+			stock_no,
+			stock_date,
+			stock_category,
+			stock_status,
+			border_no,
+			stock_qty,
+			strg_no,
+			item_no,
+			real_qty
+		)
+		SELECT stockBorder_seq.nextval, A.*
+		FROM (
+		<foreach collection="list" item="item" separator="UNION ALL">
+			SELECT 
+			To_date(#{item.stock_date}, 'yyyy-MM-dd HH24:mi:ss'), '입고', '재고',
+			#{item.border_no}, #{item.stock_qty}, #{item.strg_no}, #{item.item_no} ,#{item.real_qty}
+			FROM dual
+		</foreach>
+		) "A"
+	</insert>
+	
+	<!-- 출고 등록 -->
+	<insert id="setInsertStockRelease" parameterType="java.util.List">
+		INSERT INTO stocks (
+			stock_no,
+			stock_date,
+			stock_category,
+			stock_qty,
+			strg_no,
+			item_no,
+			release_no
+		)
+		SELECT stockBorder_seq.nextval, B.*
+		FROM (
+		<foreach collection="list" item="item" separator="UNION ALL">
+			SELECT 
+				SYSDATE, '출고', #{item.input_qty}, #{item.strg_no}, #{item.item_no}, #{item.stock_no}
+			FROM dual
+		</foreach>
+		) "B"
+	</insert>
+	
+	<!-- 출고 후 실수량  수정 -->
+	<update id="setUpdateReal" parameterType="StocksVO">
+			UPDATE stocks
+			SET real_qty = real_qty - #{input_qty}
+			<if test="real_qty lte 0 ">,stock_status = '출고'</if>
+			WHERE stock_no = #{stock_no}
+
+	</update>
+
+	<!-- stockexcel_view 전체조회 Map(Excel) -->
+	<select id="getStocksMap" resultType="map"	parameterType="StocksVO">
+		select*from stocks_view
+	</select>
+
+	<!-- 입출고 등록 -->
+	<insert id="setInsertStocks" parameterType="StocksVO">
+		INSERT INTO STOCKS ( 
+		stock_no,
+		stock_date,
+		stock_qty,
+		stock_category,
+		strg_no,
+		item_no,
+		stock_status,
+		sorder_no,
+		border_no
+		)
+		VALUES(
+		( SELECT NVL(MAX(stock_no), 0)+1 FROM stocks ),
+		TO_DATE(#{stock_date}, 'yyyy-MM-dd hh24:mi:ss'),
+		#{stock_qty},
+		#{stock_category},
+		#{strg_no},
+		#{item_no},
+		#{stock_status},
+		#{sorder_no},
+		#{border_no}
+		)
+	</insert>
+
+	<!-- 입출고 내역 수정 -->
+	<update id="setUpdateStocks" parameterType="StocksVO">
+		<!-- null체크 후 변경 . 동적 쿼리 -->
+		UPDATE stocks
+		<set>
+			<if test="stock_date != null">
+			stock_date = TO_DATE(#{stock_date},'yyyy-MM-dd hh24:mi'),
+			</if>
+			<if test="stock_qty != null">stock_qty = #{stock_qty},</if>
+			<if test="stock_category != null">stock_category = #{stock_category},</if>
+			<if test="item_no != null">item_no=#{item_no},</if>
+			<if test="strg_no != null">strg_no=#{strg_no},</if>
+			<if test="stock_status != null">stock_status = #{stock_status},</if>
+			<if test="sorder_no != null">sorder_no = #{sorder_no},</if>
+			<if test="border_no != null">border_no = #{border_no}</if>
+		</set>
+		WHERE stock_no = #{stock_no}
+	</update>
+
+	<!-- 입출고 단건조회 -->
+	<select id="getStocks" resultType="StocksVO" parameterType="StocksVO">
+		SELECT 		s.*, i.*
+		FROM		stocks s, items i
+		WHERE 		s.item_no = i.item_no and
+					s.stock_no = #{stock_no}
+	</select>
+</mapper>

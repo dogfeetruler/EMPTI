@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	 <!--  <settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="useGeneratedKeys" value="false" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25000" /> -->
+		<!-- 오라클 컬럼이 first_name 를 VO firstName 처럼 카멜케이스로 변환 -->
+		<!--  <setting name="mapUnderscoreToCamelCase" value="true" /> 
+        <setting name="cacheEnabled" value="false" />
+        <setting name="jdbcTypeForNull" value="NULL" />
+	</settings> -->
+	
+   <typeAliases>
+       <typeAlias type="com.hein.empti.dept.DeptVO" alias="DeptVO"/>
+       <typeAlias type="com.hein.empti.emp.EmpVO" alias="EmpVO"/>
+       <typeAlias type="com.hein.empti.company.CompanyVO" alias="CompanyVO"/>
+       <typeAlias type="com.hein.empti.stocks.StocksVO" alias="StocksVO"/>
+       <typeAlias type="com.hein.empti.items.ItemsVO" alias="ItemsVO"/>
+       <typeAlias type="com.hein.empti.storages.StoragesVO" alias="StoragesVO"/>
+       <typeAlias type="com.hein.empti.saleorders.SaleordersVO" alias="SaleordersVO"/>
+       <typeAlias type="com.hein.empti.buyorders.BuyordersVO" alias="BuyordersVO"/>
+  	   <typeAlias type="com.hein.empti.disposal.DisposalVO" alias="DisposalVO"/>
+  	   <typeAlias type="com.hein.empti.ledger.LedgerVO" alias="LedgerVO"/>
+  	   <typeAlias type="com.hein.empti.buyorderdetails.BuyorderdetailsVO" alias="BuyorderdetailsVO"/>
+  	   <typeAlias type="com.hein.empti.saleorderdetails.SaleorderdetailsVO" alias="SaleorderdetailsVO"/>
+  	   <typeAlias type="com.hein.empti.menu.MenuVO" alias="MenuVO"/>
+	   <typeAlias type="com.hein.empti.bank.BankVO" alias="BankVO"/>
+	   <typeAlias type="com.hein.empti.role.RoleVO" alias="RoleVO"/>
+  	   
+   </typeAliases>
+</configuration>

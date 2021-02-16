@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hein.empti.emp.mapper.EmpMapper">
+	<!-- #{}, test 는 VO에 있는 필드를 가져오는거다 -->
+	<select id="getEmp" parameterType="EmpVO" resultType="EmpVO">
+		SELECT e.emp_id, e.name, e.pwd, e.pwd2, e.phone, e.zip_code, e.address, e.address_detail, e.email, to_char(e.hire_date, 'yyyy-MM-dd') "hire_date",
+      		   e.bank_name, e.account_no, e.salary, e.status, e.position, e.mgr_id, e.dept_id, e.profile, e.resign_date, d.dept_name
+		FROM   employees e LEFT OUTER JOIN departments d
+		ON 	  e.emp_id = d.emp_id 
+		WHERE e.emp_id = #{emp_id}
+	</select>
+
+	<!-- emp Map(Excel) -->
+	<select id="getEmpMap" resultType="map" parameterType="EmpVO">
+		select*from emplist_excel
+	</select>
+
+	<select id="getEmpList" resultType="EmpVO" parameterType="EmpVO">
+		SELECT emp_id, name, to_char(hire_date, 'yyyy-MM-dd') "hire_date",  dept_name, position, manager 
+		FROM emplist_view
+		ORDER BY emp_id
+	</select>
+
+	<!-- <select id="login" resultType="EmpVO" parameterType="EmpVO"> Select 
+		* from employees where emp_id = ${emp_id} and pwd = ${pwd} </select> -->
+
+	<insert id="setInsertEmp" parameterType="EmpVO">
+		INSERT INTO EMPLOYEES
+		(emp_id,
+		name,
+		pwd,
+		phone,
+		zip_code,
+		address,
+		address_detail,
+		email,
+		hire_date,
+		salary,
+		position,
+		status,
+		bank_name,
+		account_no,
+		dept_id,
+		profile)
+		VALUES(
+		#{emp_id},
+		#{name},
+		#{pwd},
+		#{phone},
+		#{zip_code},
+		#{address},
+		#{address_detail},
+		#{email},
+		TO_DATE(#{hire_date},'yyyy-MM-dd'),
+		#{salary},
+		#{position},
+		#{status},
+		#{bank_name},
+		#{account_no},
+		#{dept_id},
+		#{profile}
+		)
+	</insert>
+
+	<update id="setUpdateEmp" parameterType="EmpVO">
+		UPDATE EMPLOYEES
+		<set>
+			<if test="emp_id != null">emp_id=#{emp_id},</if>
+			<if test="name != null">name=#{name},</if>
+			<if test="pwd != null">pwd=#{pwd},</if>
+			<if test="pwd2 != null">pwd2=#{pwd2},</if>
+			<if test="phone != null">phone=#{phone},</if>
+			<if test="zip_code != null">zip_code=#{zip_code},</if>
+			<if test="address != null">address=#{address},</if>
+			<if test="address_detail != null">address_detail=#{address_detail},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="hire_date != null">hire_date=TO_DATE(#{hire_date},'yyyy-MM-dd'),
+			</if>
+			<if test="salary != null">salary=#{salary},</if>
+			<if test="position != null">position=#{position},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="bank_name != null">bank_name=#{bank_name},</if>
+			<if test="account_no != null">account_no=#{account_no},</if>
+			<if test="dept_id != null">dept_id=#{dept_id},</if>
+			<if test="profile != null">profile=#{profile}</if>
+		</set>
+		WHERE
+		emp_id = #{emp_id}
+	</update>
+
+	<delete id="setDeleteEmp" parameterType="EmpVO">
+		DELETE FROM EMPLOYEES
+		WHERE
+		emp_id = #{emp_id}
+	</delete>
+	
+	<!-- 부서별 사원 수 차트 -->
+	<select id="getDeptEmpCnt" resultType="map">
+		SELECT NVL(dept_name,'사장님') "dept_name",
+				count(*) "cnt"
+		FROM employees e, departments d
+		WHERE e.dept_id=d.dept_id(+)
+		GROUP BY dept_name
+	</select>
+	
+	<!-- 사번 max값 -->
+	<select id="empIdMax" resultType="EmpVO">
+		SELECT nvl(max(emp_id)+1, 0) "emp_id"
+		FROM   employees
+	</select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hein.empti.menu.mapper.MenuMapper">
+
+	<select id="getMenu" resultType="MenuVO" parameterType="MenuVO">
+		SELECT * 
+		FROM menu 
+		WHERE menu_no = #{menu_no}
+	</select>
+	
+	<select id="getMenuList" resultType="MenuVO" parameterType="MenuVO">
+		SELECT m.*, er.emp_id
+		FROM menu m JOIN emp_role er
+		ON (m.role_id = er.role_id)
+		WHERE emp_id = #{emp_id}
+	</select>
+	
+</mapper>
